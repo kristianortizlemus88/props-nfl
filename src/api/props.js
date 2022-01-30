@@ -16,7 +16,7 @@ export const bitacoraJugador = async ( idJugador ) => {
     const estadisticas = await Promise.all(
         eventosBusqueda.data.events.items.map( async evento => {
             if( evento.played && evento.statistics ){
-                const estadistica = await axios.get( evento.statistics.$ref );
+                const estadistica = await axios.get( evento.statistics.$ref.replace('http','https') );
                 return estadistica.data;
             }
         })
