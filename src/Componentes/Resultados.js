@@ -39,7 +39,7 @@ export const Resultados = ({datosGrafica}) => {
       responsive: true,
   };
 
-  return (<div>
+  return (<div className='contenedor-resultados'>
         { datosGrafica.labels && 
             <Bar options={opciones} data={datosGrafica} />
         }

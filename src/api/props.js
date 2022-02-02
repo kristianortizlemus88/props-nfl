@@ -9,17 +9,22 @@ export const busquedaJugador = async ( textoConsulta ) => {
 
 const bitacoraJuegos = 'https://site.web.api.espn.com/apis/common/v3/sports/football/nfl/athletes/{idJugador}/gamelog?region=mx&lang=es&contentorigin=deportes&season=2021';
 const eventos = 'https://sports.core.api.espn.com/v2/sports/football/leagues/nfl/seasons/2021/athletes/{idJugador}/eventlog?region=mx&lang=es';
+const estadistico = 'https://sports.core.api.espn.com/v2/sports/football/leagues/nfl/events/{idEvento}/competitions/{idEvento}/competitors/{idEquipo}/roster/{idJugador}/statistics/0?lang=es&region=mx'
 
 export const bitacoraJugador = async ( idJugador ) => {
     const resultadoBusqueda = await axios.get(bitacoraJuegos.replace('{idJugador}', idJugador));
     const eventosBusqueda = await axios.get(eventos.replace('{idJugador}', idJugador));
+  
     const estadisticas = await Promise.all(
-        eventosBusqueda.data.events.items.map( async evento => {
-            if( evento.played && evento.statistics ){
-                const estadistica = await axios.get( evento.statistics.$ref );
-                return estadistica.data;
-            }
+        Object.entries(resultadoBusqueda.data.events).map( async evento => {
+            const estadistica = await axios.get( 
+                estadistico.replace('{idJugador}', idJugador)
+                           .replace(/{idEvento}/g, evento[1].id)
+                           .replace('{idEquipo}', evento[1].team.id)
+            );
+            return estadistica.data;
         })
     );
+
     return { bitacora: resultadoBusqueda.data, eventos: eventosBusqueda.data, estadisticas };
 };

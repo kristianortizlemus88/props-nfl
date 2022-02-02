@@ -3,22 +3,22 @@ import React from 'react';
 export const Filtros = ( { categorias, categoria, setCategoria, propiedades, propiedad, setPropiedad, linea, setLinea, verGrafica } ) => {
   return <div className='filtros'>
             <select className='filtro-categoria' value={categoria} onChange={(e)=> {setCategoria(e.target.value)}}>
-            <option value="" disabled selected>Categoria</option>
+            <option value="" disabled>Categoria</option>
             {
               categorias.map( cat => 
                 (
-                  <option value={cat.name}>{cat.displayName}</option>
+                  <option value={cat.name} key={cat.name}>{cat.displayName}</option>
                 )
               )
             }
             </select>
             <br/>
             <select className='filtro-propiedad' placeholder='Propiedad' value={propiedad} onChange={(e)=> {setPropiedad(e.target.value)}}>
-            <option value="" disabled selected>Propiedad</option>
+            <option value="" disabled>Propiedad</option>
             {
               propiedades.map( prop => 
                 (
-                  <option value={prop.name}>{prop.displayName}</option>
+                  <option value={prop.name} key={prop.name}>{prop.displayName}</option>
                 )
               )
             }

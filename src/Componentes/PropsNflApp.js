@@ -8,9 +8,9 @@ import '../App.css';
 export const PropsNflApp = () => {
     const [datosJugador, setDatosJugador] = useState({});
     const [categorias, setCategorias] = useState([]);
-    const [categoria, setCategoria] = useState();
+    const [categoria, setCategoria] = useState('');
     const [propiedades, setPropiedades] = useState([]);
-    const [propiedad, setPropiedad] = useState();
+    const [propiedad, setPropiedad] = useState('');
     const [linea, setLinea] = useState();
     const [datosGrafica, setDatosGrafica] = useState({});
 
@@ -29,12 +29,10 @@ export const PropsNflApp = () => {
         const listaCategorias = bitacora.estadisticas.filter( estadistica => estadistica ).flatMap( estadisticaDato => estadisticaDato.splits.categories.map( categoriaSeleccionada => ({ name: categoriaSeleccionada.name, displayName: categoriaSeleccionada.displayName }) ));    
         const categoriasUni = valoresUnicosPor(listaCategorias, 'name');
         setCategorias(categoriasUni);
-        /*console.log({bitacora, categoriasUni});*/
     };
 
     useEffect(() => {
         if(categoria){
-            /*console.log({categoria});*/
             const listaPropiedades = datosJugador.estadisticas.filter( estadistica => estadistica ).flatMap( estadisticaDato => estadisticaDato.splits.categories.filter( categoriaFiltro => categoriaFiltro.name === categoria ).flatMap( categoriaSeleccionada => categoriaSeleccionada.stats.map( stat => ({ name: stat.name, displayName: stat.displayName }) ) ));
             const propiedadesUni = valoresUnicosPor(listaPropiedades, 'name');
             setPropiedades(propiedadesUni);
@@ -60,23 +58,32 @@ export const PropsNflApp = () => {
     const verGrafica = () => {
         const rojo = 'red';
         const verde = 'green';
+        const gris = 'gray';
 
         let labels = [];
         let datos = [];
         let colores = [];
+
         for (const [idEvento, evento] of Object.entries(datosJugador.bitacora.events)) {
             const fecha = new Date(evento.gameDate);
             labels.push(`${evento.opponent.abbreviation}`);
             const estadisticaPropiedad = obtenerEstadisticaEventoCategoriaPropiedad(idEvento, categoria, propiedad);
             if( estadisticaPropiedad ){
                 datos.push(estadisticaPropiedad.value);
-                colores.push( Number(estadisticaPropiedad.value) >= Number(linea) ? verde : rojo)
+                if( linea ){
+                    colores.push( Number(estadisticaPropiedad.value) >= Number(linea) ? verde : rojo)
+                }else{
+                    colores.push( gris )
+                }
             }else{
                 datos.push(0);
-                colores.push( 'gray' );
+                colores.push( gris );
             }
-            
         }
+
+        labels = labels.slice( -10 );
+        datos = datos.slice( -10 );
+        colores = colores.slice( -10 );
         
         const data = {
             labels,
