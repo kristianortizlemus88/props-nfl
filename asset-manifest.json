@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/props-nfl/static/css/main.afdc9b6a.css",
-    "main.js": "/props-nfl/static/js/main.9920ac4c.js",
+    "main.css": "/props-nfl/static/css/main.ddfa04a5.css",
+    "main.js": "/props-nfl/static/js/main.bcbc35e7.js",
     "static/js/787.efc28903.chunk.js": "/props-nfl/static/js/787.efc28903.chunk.js",
     "index.html": "/props-nfl/index.html",
-    "main.afdc9b6a.css.map": "/props-nfl/static/css/main.afdc9b6a.css.map",
-    "main.9920ac4c.js.map": "/props-nfl/static/js/main.9920ac4c.js.map",
+    "main.ddfa04a5.css.map": "/props-nfl/static/css/main.ddfa04a5.css.map",
+    "main.bcbc35e7.js.map": "/props-nfl/static/js/main.bcbc35e7.js.map",
     "787.efc28903.chunk.js.map": "/props-nfl/static/js/787.efc28903.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.afdc9b6a.css",
-    "static/js/main.9920ac4c.js"
+    "static/css/main.ddfa04a5.css",
+    "static/js/main.bcbc35e7.js"
   ]
 }
