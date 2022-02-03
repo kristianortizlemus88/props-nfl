@@ -3,6 +3,8 @@ import { busquedaJugador } from '../api/props';
 
 export const Buscador = ( { seleccionJugador } ) => {
   const [nombreJugador, setNombreJugador] = useState('');
+  const [equipo, setEquipo] = useState('');
+  const [foto, setFoto] = useState();
   const [resultados, setResultados] = useState([]);
 
   const lanzaBusqueda = async ( textoConsulta ) => {
@@ -16,9 +18,12 @@ export const Buscador = ( { seleccionJugador } ) => {
     setResultados([]);
     seleccionJugador(resultado);
     setNombreJugador(resultado.displayName);
+    setEquipo(resultado.subtitle);
+    setFoto(resultado.image.default);
   };
 
   return <div className='buscador' >
+      { foto &&  <img className='foto' src={foto} /> }
             <input  type='text' 
                     className='caja-jugador'
                     placeholder='Nombre del jugador'
@@ -35,7 +40,7 @@ export const Buscador = ( { seleccionJugador } ) => {
                     } />
             {   resultados.length > 0 &&  <div className='resultados-busqueda'>
                     {
-                        resultados.filter( resultadoNFL => resultadoNFL.defaultLeagueSlug === 'nfl' ).map( resultado => (
+                        resultados.filter( resultadoNFL => resultadoNFL/*.defaultLeagueSlug === 'nfl'*/ ).map( resultado => (
                                 <div key={`fila-jugador-${resultado.displayName}`}
                                     className='fila-resultado-jugador'
                                     onClick={() => { seleccionarJugador(resultado); }}>
@@ -46,6 +51,9 @@ export const Buscador = ( { seleccionJugador } ) => {
                     }
                 </div>
             }
+            <div className='nombre-equipo'>
+                {equipo}
+            </div>
 
         </div>
 };

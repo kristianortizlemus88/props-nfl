@@ -24,7 +24,7 @@ export const PropsNflApp = () => {
         setLinea('');
         const expresion = /_\/id\/([0-9]*)\//i;
         const idJugador = jugador.link.web.match(expresion);
-        const bitacora = await bitacoraJugador( idJugador[1] );
+        const bitacora = await bitacoraJugador( idJugador[1], jugador.sport, jugador.defaultLeagueSlug );
         setDatosJugador(bitacora);
         const listaCategorias = bitacora.estadisticas.filter( estadistica => estadistica ).flatMap( estadisticaDato => estadisticaDato.splits.categories.map( categoriaSeleccionada => ({ name: categoriaSeleccionada.name, displayName: categoriaSeleccionada.displayName }) ));    
         const categoriasUni = valoresUnicosPor(listaCategorias, 'name');
@@ -60,14 +60,18 @@ export const PropsNflApp = () => {
         const verde = 'green';
         const gris = 'gray';
 
-        let labels = [];
+        let vsEquipo = [];
+        let fechaPartido = [];
         let datos = [];
         let colores = [];
 
-        for (const [idEvento, evento] of Object.entries(datosJugador.bitacora.events)) {
+        const eventos = Object.entries(datosJugador.bitacora.events).map( evento => evento[1]);
+        const eventosOrdenados = eventos.sort( (eventoA, eventoB) => new Date( eventoA.gameDate ) - new Date( eventoB.gameDate ) );
+        eventosOrdenados.map( evento => {
             const fecha = new Date(evento.gameDate);
-            labels.push(`${evento.opponent.abbreviation}`);
-            const estadisticaPropiedad = obtenerEstadisticaEventoCategoriaPropiedad(idEvento, categoria, propiedad);
+            const formatoFecha = fecha.toISOString().split('T')[0].split('-');
+            vsEquipo.push([`${evento.opponent.abbreviation}`, `${formatoFecha[1]}-${formatoFecha[2]}`]);
+            const estadisticaPropiedad = obtenerEstadisticaEventoCategoriaPropiedad(evento.id, categoria, propiedad);
             if( estadisticaPropiedad ){
                 datos.push(estadisticaPropiedad.value);
                 if( linea ){
@@ -79,14 +83,14 @@ export const PropsNflApp = () => {
                 datos.push(0);
                 colores.push( gris );
             }
-        }
+        });
 
-        labels = labels.slice( -10 );
+        vsEquipo = vsEquipo.slice( -10 );
         datos = datos.slice( -10 );
         colores = colores.slice( -10 );
         
         const data = {
-            labels,
+            labels: vsEquipo,
             datasets: [
             {
                 label: propiedad,

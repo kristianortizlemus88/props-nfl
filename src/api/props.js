@@ -7,13 +7,24 @@ export const busquedaJugador = async ( textoConsulta ) => {
     return resultadoBusqueda.data;
 };
 
-const bitacoraJuegos = 'https://site.web.api.espn.com/apis/common/v3/sports/football/nfl/athletes/{idJugador}/gamelog?region=mx&lang=es&contentorigin=deportes&season=2021';
-const eventos = 'https://sports.core.api.espn.com/v2/sports/football/leagues/nfl/seasons/2021/athletes/{idJugador}/eventlog?region=mx&lang=es';
-const estadistico = 'https://sports.core.api.espn.com/v2/sports/football/leagues/nfl/events/{idEvento}/competitions/{idEvento}/competitors/{idEquipo}/roster/{idJugador}/statistics/0?lang=es&region=mx'
+const bitacoraJuegos = 'https://site.web.api.espn.com/apis/common/v3/sports/{deporte}/{liga}/athletes/{idJugador}/gamelog?region=mx&lang=es&contentorigin=deportes&season={anio}';
+const eventos = 'https://sports.core.api.espn.com/v2/sports/{deporte}/leagues/{liga}/seasons/{anio}/athletes/{idJugador}/eventlog?region=mx&lang=es';
+const estadistico = 'https://sports.core.api.espn.com/v2/sports/{deporte}/leagues/{liga}/events/{idEvento}/competitions/{idEvento}/competitors/{idEquipo}/roster/{idJugador}/statistics/0?lang=es&region=mx'
 
-export const bitacoraJugador = async ( idJugador ) => {
-    const resultadoBusqueda = await axios.get(bitacoraJuegos.replace('{idJugador}', idJugador));
-    const eventosBusqueda = await axios.get(eventos.replace('{idJugador}', idJugador));
+export const bitacoraJugador = async ( idJugador, deporte, liga ) => {
+    const anio = anioPorLiga(liga);
+    const resultadoBusqueda = await axios.get(
+            bitacoraJuegos.replace('{idJugador}', idJugador)
+                          .replace('{deporte}', deporte)
+                          .replace('{liga}', liga)
+                          .replace('{anio}', anio)
+        );
+    const eventosBusqueda = await axios.get(
+            eventos.replace('{idJugador}', idJugador)
+            .replace('{deporte}', deporte)
+            .replace('{liga}', liga)
+            .replace('{anio}', anio)
+        );
   
     const estadisticas = await Promise.all(
         Object.entries(resultadoBusqueda.data.events).map( async evento => {
@@ -21,10 +32,24 @@ export const bitacoraJugador = async ( idJugador ) => {
                 estadistico.replace('{idJugador}', idJugador)
                            .replace(/{idEvento}/g, evento[1].id)
                            .replace('{idEquipo}', evento[1].team.id)
+                           .replace('{deporte}', deporte)
+                           .replace('{liga}', liga)
             );
             return estadistica.data;
         })
     );
 
     return { bitacora: resultadoBusqueda.data, eventos: eventosBusqueda.data, estadisticas };
+};
+
+const anioPorLiga = ( liga ) => {
+    const anio = new Date().getFullYear();
+    switch (liga) {
+        case 'nfl':
+            return anio - 1;
+        case 'nba':
+            return anio;
+        default:
+            return anio;
+    }
 };
